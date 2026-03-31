@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>git commit -m "I love you"</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,700;1,300;1,400&family=Playfair+Display:ital,wght@0,400;1,400;1,700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0d0f14;
+    --panel: #13161f;
+    --border: #1e2333;
+    --accent: #ff6b9d;
+    --accent2: #ff9ec4;
+    --gold: #f7c59f;
+    --green: #4ecca3;
+    --blue: #7eb8f7;
+    --purple: #c792ea;
+    --text: #cdd6f4;
+    --muted: #6c7086;
+    --white: #ffffff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* ─── STARS ─── */
+  .stars {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 30% 80%, rgba(255,255,255,.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 50% 40%, rgba(255,255,255,.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 10%, rgba(255,255,255,.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 60%, rgba(255,255,255,.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 20% 55%, rgba(255,255,255,.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 85% 30%, rgba(255,255,255,.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 60% 70%, rgba(255,255,255,.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 40% 90%, rgba(255,255,255,.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 75% 85%, rgba(255,255,255,.5) 0%, transparent 100%);
+  }
+
+  /* ─── FLOATING HEARTS ─── */
+  .floating-hearts {
+    position: fixed; inset: 0; pointer-events: none; z-index: 1; overflow: hidden;
+  }
+  .heart {
+    position: absolute;
+    bottom: -60px;
+    font-size: 1.2rem;
+    animation: floatUp linear infinite;
+    opacity: 0;
+  }
+  @keyframes floatUp {
+    0%   { transform: translateY(0) rotate(-15deg); opacity: 0; }
+    10%  { opacity: .6; }
+    90%  { opacity: .3; }
+    100% { transform: translateY(-110vh) rotate(15deg); opacity: 0; }
+  }
+
+  /* ─── SECTIONS ─── */
+  section {
+    position: relative; z-index: 2;
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ══════════════════════════════
+     SECTION 1 – HERO / TERMINAL
+  ══════════════════════════════ */
+  #hero {
+    flex-direction: column;
+    padding: 2rem 1rem;
+  }
+
+  .window {
+    width: min(700px, 95vw);
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 0 80px rgba(255,107,157,.12), 0 30px 80px rgba(0,0,0,.6);
+    overflow: hidden;
+    animation: slideUp .8s cubic-bezier(.16,1,.3,1) both;
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .titlebar {
+    background: #1a1d27;
+    padding: .65rem 1rem;
+    display: flex; align-items: center; gap: .5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot.r { background: #ff5f57; }
+  .dot.y { background: #ffbd2e; }
+  .dot.g { background: #28ca41; }
+  .tab-name {
+    margin-left: .75rem;
+    font-size: .72rem;
+    color: var(--muted);
+    letter-spacing: .05em;
+  }
+
+  .terminal {
+    padding: 1.8rem 2rem 2rem;
+    font-size: clamp(.75rem, 2vw, .88rem);
+    line-height: 1.9;
+  }
+
+  .line { display: flex; flex-wrap: wrap; gap: .3em; }
+  .prompt { color: var(--green); }
+  .cmd    { color: var(--blue); }
+  .str    { color: var(--accent); }
+  .flag   { color: var(--purple); }
+  .out    { color: var(--text); padding-left: 1em; }
+  .comment{ color: var(--muted); font-style: italic; }
+  .heart-txt { color: var(--accent); }
+
+  .cursor {
+    display: inline-block;
+    width: 2px; height: 1em;
+    background: var(--accent);
+    vertical-align: middle;
+    animation: blink .8s step-end infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* type-in animation */
+  .type-line { overflow: hidden; white-space: nowrap; width: 0; animation: typeIn .6s steps(40,end) forwards; }
+  @keyframes typeIn { to { width: 100%; } }
+
+  .delay-1 { animation-delay: .3s; }
+  .delay-2 { animation-delay: 1.2s; }
+  .delay-3 { animation-delay: 2.0s; }
+  .delay-4 { animation-delay: 2.8s; }
+  .delay-5 { animation-delay: 3.6s; }
+  .delay-6 { animation-delay: 4.4s; }
+  .delay-7 { animation-delay: 5.0s; }
+
+  .scroll-hint {
+    margin-top: 2.5rem;
+    font-size: .75rem;
+    color: var(--muted);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    animation: pulse 2s ease-in-out infinite;
+    animation-delay: 6s;
+    opacity: 0;
+  }
+  @keyframes pulse { 0%,100%{opacity:.3} 50%{opacity:1} }
+
+  /* ══════════════════════════════
+     SECTION 2 – ABOUT HER (README)
+  ══════════════════════════════ */
+  #readme {
+    padding: 4rem 1.5rem;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .section-label {
+    font-size: .7rem;
+    color: var(--muted);
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  .readme-card {
+    width: min(680px, 95vw);
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .readme-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at top left, rgba(255,107,157,.06) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .readme-title {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+    color: var(--white);
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+  }
+  .readme-title span { color: var(--accent); }
+
+  .readme-body { font-size: .82rem; line-height: 2; color: var(--text); }
+  .readme-body p { margin-bottom: 1rem; }
+
+  .tag-list {
+    display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.5rem;
+  }
+  .tag {
+    background: rgba(255,107,157,.12);
+    border: 1px solid rgba(255,107,157,.25);
+    color: var(--accent2);
+    font-size: .7rem;
+    padding: .25rem .7rem;
+    border-radius: 999px;
+    letter-spacing: .05em;
+  }
+
+  /* ══════════════════════════════
+     SECTION 3 – REASONS (COMMITS)
+  ══════════════════════════════ */
+  #commits {
+    padding: 4rem 1.5rem;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .commits-title {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(1.4rem, 3.5vw, 2rem);
+    color: var(--white);
+    text-align: center;
+  }
+  .commits-title span { color: var(--accent); }
+
+  .commit-list {
+    width: min(680px, 95vw);
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .commit-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: opacity .5s ease, transform .5s ease;
+  }
+  .commit-item.visible { opacity: 1; transform: translateX(0); }
+
+  .commit-icon {
+    width: 32px; height: 32px; flex-shrink: 0;
+    border-radius: 50%;
+    background: rgba(255,107,157,.15);
+    border: 1px solid rgba(255,107,157,.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: .9rem;
+    margin-top: .1rem;
+  }
+  .commit-hash { color: var(--blue); font-size: .72rem; }
+  .commit-msg  { color: var(--text); font-size: .82rem; line-height: 1.5; }
+  .commit-meta { color: var(--muted); font-size: .68rem; margin-top: .2rem; }
+
+  /* ══════════════════════════════
+     SECTION 4 – LOVE LETTER
+  ══════════════════════════════ */
+  #letter {
+    padding: 5rem 1.5rem;
+    flex-direction: column;
+    gap: 2rem;
+    background: radial-gradient(ellipse at center, rgba(255,107,157,.05) 0%, transparent 70%);
+  }
+
+  .letter-card {
+    width: min(600px, 95vw);
+    background: var(--panel);
+    border: 1px solid rgba(255,107,157,.2);
+    border-radius: 12px;
+    padding: 3rem;
+    box-shadow: 0 0 60px rgba(255,107,157,.08);
+  }
+
+  .letter-header {
+    font-size: .7rem;
+    color: var(--muted);
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: .5rem;
+  }
+
+  .letter-body {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(.95rem, 2.5vw, 1.1rem);
+    line-height: 1.95;
+    color: var(--text);
+  }
+  .letter-body p { margin-bottom: 1.2rem; }
+  .letter-body .highlight { color: var(--accent2); font-style: italic; }
+
+  .letter-sign {
+    margin-top: 2rem;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    color: var(--accent);
+    font-size: 1.1rem;
+  }
+
+  /* ══════════════════════════════
+     SECTION 5 – THE PROPOSAL
+  ══════════════════════════════ */
+  #proposal {
+    padding: 4rem 1.5rem;
+    flex-direction: column;
+    gap: 2.5rem;
+    min-height: 100vh;
+    text-align: center;
+  }
+
+  .proposal-question {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(1.6rem, 5vw, 3rem);
+    color: var(--white);
+    line-height: 1.3;
+    max-width: 600px;
+  }
+  .proposal-question span { color: var(--accent); }
+
+  .proposal-sub {
+    font-size: .78rem;
+    color: var(--muted);
+    letter-spacing: .1em;
+    max-width: 400px;
+    line-height: 1.8;
+  }
+
+  .btns {
+    display: flex; gap: 1.5rem; flex-wrap: wrap; justify-content: center;
+    margin-top: 1rem;
+  }
+
+  .btn-yes {
+    background: linear-gradient(135deg, #ff6b9d, #ff9ec4);
+    color: #fff;
+    border: none;
+    padding: 1rem 2.5rem;
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .9rem;
+    cursor: pointer;
+    transition: transform .2s, box-shadow .2s;
+    box-shadow: 0 0 30px rgba(255,107,157,.35);
+    letter-spacing: .05em;
+  }
+  .btn-yes:hover { transform: scale(1.05); box-shadow: 0 0 50px rgba(255,107,157,.55); }
+
+  .btn-no {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 1rem 2.5rem;
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .9rem;
+    cursor: pointer;
+    transition: all .2s;
+    letter-spacing: .05em;
+    position: relative;
+  }
+  .btn-no:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ─── YES MODAL ─── */
+  #yes-overlay {
+    position: fixed; inset: 0; z-index: 100;
+    background: rgba(13,15,20,.96);
+    display: none;
+    align-items: center; justify-content: center;
+    flex-direction: column;
+    gap: 2rem;
+    text-align: center;
+    padding: 2rem;
+    animation: fadeInOver .5s ease;
+  }
+  @keyframes fadeInOver { from{opacity:0} to{opacity:1} }
+  #yes-overlay.active { display: flex; }
+
+  .yes-emoji { font-size: 4rem; animation: bounceIn .6s cubic-bezier(.36,.07,.19,.97) both; }
+  @keyframes bounceIn {
+    0%   { transform: scale(0); opacity: 0; }
+    60%  { transform: scale(1.2); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .yes-title {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    color: var(--white);
+    line-height: 1.3;
+  }
+  .yes-title span { color: var(--accent); }
+
+  .yes-code {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.2rem 2rem;
+    font-size: .8rem;
+    color: var(--green);
+    line-height: 1.8;
+    max-width: 420px;
+    width: 100%;
+    text-align: left;
+  }
+
+  .confetti-heart {
+    position: fixed;
+    font-size: 1.5rem;
+    pointer-events: none;
+    z-index: 101;
+    animation: confettiFall linear forwards;
+    opacity: 0;
+  }
+  @keyframes confettiFall {
+    0%   { opacity: 1; transform: translateY(-20px) rotate(0deg); }
+    100% { opacity: 0; transform: translateY(100vh) rotate(360deg); }
+  }
+
+  /* ─── SCROLL ANIMATIONS ─── */
+  .fade-in {
+    opacity: 0; transform: translateY(30px);
+    transition: opacity .7s ease, transform .7s ease;
+  }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 480px) {
+    .terminal { padding: 1.2rem 1.2rem 1.5rem; }
+    .readme-card, .letter-card { padding: 1.5rem; }
+    .btns { flex-direction: column; align-items: center; }
+    .btn-yes, .btn-no { width: 100%; max-width: 260px; }
+  }
+
+  /* ─── DIVIDER ─── */
+  .divider {
+    width: min(680px, 90vw);
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--border), transparent);
+    margin: 0 auto;
+  }
+
+  /* ─── PROGRESS BAR ─── */
+  .progress-bar {
+    position: fixed; top: 0; left: 0;
+    height: 2px;
+    background: linear-gradient(to right, var(--accent), var(--purple));
+    z-index: 50;
+    transition: width .1s;
+  }
+</style>
+</head>
+<body>
+
+<div class="stars"></div>
+<div class="progress-bar" id="progress"></div>
+
+<!-- Floating hearts -->
+<div class="floating-hearts" id="hearts"></div>
+
+<!-- ═══ SECTION 1 – TERMINAL HERO ═══ -->
+<section id="hero">
+  <div class="window">
+    <div class="titlebar">
+      <div class="dot r"></div>
+      <div class="dot y"></div>
+      <div class="dot g"></div>
+      <span class="tab-name">love.js — proposal-for-you</span>
+    </div>
+    <div class="terminal">
+
+      <div class="line type-line delay-1">
+        <span class="prompt">~</span>&nbsp;<span class="cmd">git</span>&nbsp;<span class="flag">init</span>&nbsp;<span class="str">"us"</span>
+      </div>
+      <div class="line out type-line delay-2" style="opacity:.7">Initialized empty repository in /heart/</div>
+
+      <div style="margin:.6rem 0"></div>
+
+      <div class="line type-line delay-3">
+        <span class="prompt">~</span>&nbsp;<span class="cmd">git</span>&nbsp;<span class="flag">add</span>&nbsp;<span class="str">every-memory-with-you.md</span>
+      </div>
+
+      <div class="line type-line delay-4">
+        <span class="prompt">~</span>&nbsp;<span class="cmd">git</span>&nbsp;<span class="flag">commit</span>&nbsp;<span class="flag">-m</span>&nbsp;<span class="str">"I love you ❤️"</span>
+      </div>
+
+      <div style="margin:.6rem 0"></div>
+
+      <div class="line type-line delay-5 comment">// 1 file changed, ∞ feelings added</div>
+
+      <div style="margin:.6rem 0"></div>
+
+      <div class="line type-line delay-6">
+        <span class="prompt">~</span>&nbsp;<span class="cmd">git</span>&nbsp;<span class="flag">push</span>&nbsp;<span class="str">origin</span>&nbsp;<span class="heart-txt">forever</span>
+      </div>
+
+      <div class="line out type-line delay-7" style="opacity:.7">Pushing love... ████████████ 100% done ✔</div>
+
+      <div style="margin:.8rem 0"></div>
+      <span class="cursor"></span>
+    </div>
+  </div>
+
+  <p class="scroll-hint">↓ &nbsp;scroll to read more&nbsp; ↓</p>
+</section>
+
+<!-- ═══ SECTION 2 – README ═══ -->
+<section id="readme">
+  <p class="section-label fade-in">// README.md</p>
+  <div class="readme-card fade-in">
+    <h2 class="readme-title">About <span>You</span></h2>
+    <div class="readme-body">
+      <p>You are the most <em>beautiful</em> piece of code I have ever encountered — and I've read a lot of source code. Unlike most programs, you have no bugs. You are elegant, you are warm, and somehow you always run perfectly, even on the worst days.</p>
+      <p>Ever since you walked into my life, my git log has nothing but good commits. My stack traces vanished. My runtime errors? Fixed. You are the one dependency I never want to remove.</p>
+      <p>This README is my attempt to document something I find impossible to fully describe: how deeply I care about you.</p>
+    </div>
+    <div class="tag-list">
+      <span class="tag">kind</span>
+      <span class="tag">brilliant</span>
+      <span class="tag">radiant</span>
+      <span class="tag">funny</span>
+      <span class="tag">my favourite person</span>
+      <span class="tag">open-source heart ❤️</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 3 – COMMIT HISTORY ═══ -->
+<section id="commits">
+  <h2 class="commits-title fade-in">Why I love <span>you</span> — commit history</h2>
+
+  <div class="commit-list">
+    <div class="commit-item">
+      <div class="commit-icon">😊</div>
+      <div>
+        <div class="commit-hash">a3f91bc</div>
+        <div class="commit-msg">feat: your smile rewrites every sad line in my heart</div>
+        <div class="commit-meta">by dev-in-love • 1 year ago</div>
+      </div>
+    </div>
+    <div class="commit-item">
+      <div class="commit-icon">🎵</div>
+      <div>
+        <div class="commit-hash">b72dc4e</div>
+        <div class="commit-msg">feat: the way you laugh is my favourite notification sound</div>
+        <div class="commit-meta">by dev-in-love • 9 months ago</div>
+      </div>
+    </div>
+    <div class="commit-item">
+      <div class="commit-icon">🌙</div>
+      <div>
+        <div class="commit-hash">c18aa77</div>
+        <div class="commit-msg">fix: our late-night talks patch every bug in my day</div>
+        <div class="commit-meta">by dev-in-love • 7 months ago</div>
+      </div>
+    </div>
+    <div class="commit-item">
+      <div class="commit-icon">🌟</div>
+      <div>
+        <div class="commit-hash">d04fe23</div>
+        <div class="commit-msg">feat: you make even Mondays feel like a deploy-to-prod celebration</div>
+        <div class="commit-meta">by dev-in-love • 5 months ago</div>
+      </div>
+    </div>
+    <div class="commit-item">
+      <div class="commit-icon">☕</div>
+      <div>
+        <div class="commit-hash">e91bc56</div>
+        <div class="commit-msg">chore: you are better than coffee — and that is saying everything</div>
+        <div class="commit-meta">by dev-in-love • 3 months ago</div>
+      </div>
+    </div>
+    <div class="commit-item">
+      <div class="commit-icon">💻</div>
+      <div>
+        <div class="commit-hash">f30cd89</div>
+        <div class="commit-msg">feat: thinking of you compiles correctly every single time</div>
+        <div class="commit-meta">by dev-in-love • 1 month ago</div>
+      </div>
+    </div>
+    <div class="commit-item" style="border-bottom:none">
+      <div class="commit-icon">❤️</div>
+      <div>
+        <div class="commit-hash">HEAD → forever</div>
+        <div class="commit-msg">feat: I want to keep adding commits with you, for the rest of my life</div>
+        <div class="commit-meta">by dev-in-love • just now</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 4 – LETTER ═══ -->
+<section id="letter">
+  <div class="letter-card fade-in">
+    <div class="letter-header">
+      <span><span style="color:var(--green)">FROM:</span> dev-in-love@heart.io</span>
+      <span><span style="color:var(--green)">TO:</span> the-one-i-adore@universe.com</span>
+    </div>
+    <div class="letter-body">
+      <p>My darling,</p>
+      <p>I've written thousands of lines of code — loops, functions, algorithms that took nights to get right. But nothing I've ever written has been as <span class="highlight">effortlessly beautiful</span> as the way you make me feel.</p>
+      <p>I've tried to debug why I think about you constantly. I've searched Stack Overflow. There is no answer. The only conclusion my logic can reach is that <span class="highlight">you are something extraordinary</span>.</p>
+      <p>You are not just someone I like. You are someone I want to build with — a future, a story, a life. I want to write every chapter with you as my pair programmer, my best friend, my home.</p>
+      <p>I am just a developer who fell hopelessly in love with you. And I wouldn't change a single line.</p>
+    </div>
+    <div class="letter-sign">— Yours, always 💕</div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 5 – PROPOSAL ═══ -->
+<section id="proposal">
+  <p class="section-label fade-in">// the big question</p>
+  <h2 class="proposal-question fade-in">
+    Will you be my <span>girlfriend</span>?
+  </h2>
+  <p class="proposal-sub fade-in">
+    This is the most important function I have ever called.<br/>
+    No try-catch. No fallback. Just my whole heart.
+  </p>
+  <div class="btns fade-in">
+    <button class="btn-yes" onclick="onYes()">❤️ &nbsp;Yes, I will!</button>
+    <button class="btn-no" id="noBtn" onmouseover="runaway(this)" ontouchstart="runaway(this)">Maybe later...</button>
+  </div>
+</section>
+
+<!-- YES OVERLAY -->
+<div id="yes-overlay">
+  <div class="yes-emoji">🥰</div>
+  <h2 class="yes-title">She said <span>Yes!</span><br/>Deploying happiness…</h2>
+  <div class="yes-code">
+    <div><span style="color:var(--muted)">$</span> npm run forever</div>
+    <div style="color:var(--text)">✔ installing happiness…</div>
+    <div style="color:var(--text)">✔ building our future…</div>
+    <div style="color:var(--text)">✔ bundling love, laughter & late nights…</div>
+    <div style="color:var(--accent)">🚀 Deployed successfully to /us/forever</div>
+  </div>
+  <p style="color:var(--muted);font-size:.78rem">You've just made me the happiest developer alive. ❤️</p>
+</div>
+
+<script>
+  /* ── Floating hearts generator ── */
+  const heartChars = ['❤️','💕','💖','💗','💓','💝','✨'];
+  const container = document.getElementById('hearts');
+  function spawnHeart() {
+    const el = document.createElement('div');
+    el.className = 'heart';
+    el.textContent = heartChars[Math.floor(Math.random() * heartChars.length)];
+    el.style.left = Math.random() * 100 + 'vw';
+    el.style.fontSize = (.6 + Math.random() * .9) + 'rem';
+    const dur = 7 + Math.random() * 8;
+    el.style.animationDuration = dur + 's';
+    el.style.animationDelay = Math.random() * 4 + 's';
+    container.appendChild(el);
+    setTimeout(() => el.remove(), (dur + 4) * 1000);
+  }
+  setInterval(spawnHeart, 900);
+  for (let i = 0; i < 8; i++) spawnHeart();
+
+  /* ── Scroll progress ── */
+  const prog = document.getElementById('progress');
+  window.addEventListener('scroll', () => {
+    const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+    prog.style.width = pct + '%';
+  });
+
+  /* ── Intersection observer for fade-ins & commit items ── */
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+      }
+    });
+  }, { threshold: .15 });
+
+  document.querySelectorAll('.fade-in, .commit-item').forEach(el => observer.observe(el));
+
+  /* ── "No" button runs away ── */
+  function runaway(btn) {
+    const rect = btn.getBoundingClientRect();
+    const maxX = window.innerWidth  - rect.width  - 20;
+    const maxY = window.innerHeight - rect.height - 20;
+    btn.style.position = 'fixed';
+    btn.style.left = Math.random() * maxX + 'px';
+    btn.style.top  = Math.random() * maxY + 'px';
+    btn.style.zIndex = 99;
+    btn.style.transition = 'left .3s, top .3s';
+  }
+
+  /* ── YES handler ── */
+  function onYes() {
+    document.getElementById('yes-overlay').classList.add('active');
+    shootConfetti();
+    setInterval(shootConfetti, 1500);
+  }
+
+  function shootConfetti() {
+    const items = ['❤️','💖','💕','✨','🌸','🎉','💝'];
+    for (let i = 0; i < 20; i++) {
+      const el = document.createElement('div');
+      el.className = 'confetti-heart';
+      el.textContent = items[Math.floor(Math.random() * items.length)];
+      el.style.left = Math.random() * 100 + 'vw';
+      el.style.top = '-30px';
+      el.style.fontSize = (.8 + Math.random() * 1.2) + 'rem';
+      const dur = 2 + Math.random() * 2;
+      el.style.animationDuration = dur + 's';
+      el.style.animationDelay = Math.random() * .8 + 's';
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), (dur + 1) * 1000);
+    }
+  }
+</script>
+</body>
+</html>
